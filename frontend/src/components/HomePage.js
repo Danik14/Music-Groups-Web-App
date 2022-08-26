@@ -9,6 +9,7 @@ import {
   Route,
   Routes,
 } from "react-router-dom";
+import Room from "./Room";
 
 export default class HomePage extends Component {
   constructor(props) {
@@ -23,6 +24,7 @@ export default class HomePage extends Component {
 
           <Route path="/join" element={<RoomJoinPage />}></Route>
           <Route path="/create" element={<CreateRoomPage />}></Route>
+          <Route path="/room/:roomCode" element={<Room />} />
         </Routes>
       </BrowserRouter>
     );
