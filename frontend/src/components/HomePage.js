@@ -10,10 +10,6 @@ import {
   Routes,
 } from "react-router-dom";
 
-import { createRoot } from "react-dom/client";
-//const container = document.getElementById("app");
-//const root = createRoot(container); // createRoot(container!) if you use TypeScript
-
 export default class HomePage extends Component {
   constructor(props) {
     super(props);
@@ -23,7 +19,8 @@ export default class HomePage extends Component {
     return (
       <BrowserRouter>
         <Routes>
-          <Route exact path="/"></Route>
+          <Route path="/" element={<p>This is the home page</p>} />
+
           <Route path="/join" element={<RoomJoinPage />}></Route>
           <Route path="/create" element={<CreateRoomPage />}></Route>
         </Routes>

@@ -10,6 +10,6 @@ export default class RoomJoinPage extends Component {
   }
 
   render() {
-    return <div>RoomJoinPage</div>;
+    return <div>1</div>;
   }
 }
