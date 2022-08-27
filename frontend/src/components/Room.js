@@ -3,23 +3,37 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { Grid, Button, Typography } from "@material-ui/core";
 
-const Room = () => {
-  let { roomCode } = useParams();
+const Room = ({ codeOfRoom, clearRoomCode }) => {
   const [votesToSkip, setVotesToSkip] = useState(2);
   const [guestCanPause, setGuestCanPause] = useState(false);
   // if current user is the host \/
   const [isHost, setIsHost] = useState(false);
+  let [roomCode, setRoomCode] = useState(
+    codeOfRoom ? codeOfRoom : useParams().roomCode
+  );
 
   const navigate = useNavigate();
 
   const getRoomDetails = async () => {
     await fetch("/api/get-room" + "?code=" + roomCode)
-      .then((response) => response.json())
+      .then((response) => {
+        {
+          if (!response.ok) {
+            navigate("/");
+            return;
+          }
+          return response.json();
+        }
+      })
       .then((data) => {
         setVotesToSkip(data.votes_to_skip);
         setGuestCanPause(data.guest_can_pause);
         setIsHost(data.is_host);
         console.log("details", data);
+      })
+      .catch((error) => {
+        navigate("/");
+        return;
       });
   };
 
@@ -30,7 +44,7 @@ const Room = () => {
     };
     fetch("/api/leave-room", requestOptions).then((response) => {
       console.log("res", response);
-      // clearRoomCode();
+      clearRoomCode();
       navigate("/");
     });
   };
