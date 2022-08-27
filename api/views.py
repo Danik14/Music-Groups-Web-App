@@ -1,5 +1,5 @@
 from os import stat
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from rest_framework import generics, status
 from .models import Room
@@ -112,3 +112,16 @@ class JoinRoom(APIView):
             {"Bad Request": "Invalid post data, did not find a code key"},
             status=status.HTTP_400_BAD_REQUEST,
         )
+
+
+class UserInRoom(APIView):
+    def get(self, request, format=None):
+        if not self.request.session.exists(self.request.session.session_key):
+            self.request.session.create()
+
+        data = {
+            # taking room code from session
+            "code": self.request.session.get("room_code")
+        }
+
+        return JsonResponse(data, status=status.HTTP_200_OK)
