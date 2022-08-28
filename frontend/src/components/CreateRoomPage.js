@@ -10,17 +10,21 @@ import Radio from "@material-ui/core/Radio";
 import RadioGroup from "@material-ui/core/RadioGroup";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import { Collapse } from "@material-ui/core";
-import { Alert } from "@mui/material";
+import Alert from "@material-ui/lab/Alert";
 
 const CreateRoomPage = ({
-  votesToSkipCurrent = 2,
-  guestCanPauseCurrent = true,
+  votesToSkipCurrent,
+  guestCanPauseCurrent,
   update,
   updateCallback,
   roomCode,
 }) => {
-  const [guestCanPause, setGuestCanPause] = useState(true);
-  const [votesToSkip, setVotesToSkip] = useState(2);
+  const [guestCanPause, setGuestCanPause] = useState(
+    guestCanPauseCurrent != null ? guestCanPauseCurrent : true
+  );
+  const [votesToSkip, setVotesToSkip] = useState(
+    votesToSkipCurrent ? votesToSkipCurrent : 2
+  );
   const [successMsg, setSuccessMsg] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -61,6 +65,7 @@ const CreateRoomPage = ({
         code: roomCode,
       }),
     };
+
     await fetch("/api/update-room", requestOptions).then((response) => {
       if (response.ok) {
         setSuccessMsg("Room updated successfully!");
@@ -93,6 +98,7 @@ const CreateRoomPage = ({
   };
 
   const renderUpdateButtons = () => {
+    //console.log(document.querySelectorAll(" p * div "));
     return (
       <Grid item xs={12} align="center">
         <Button
@@ -112,11 +118,29 @@ const CreateRoomPage = ({
     <Grid container spacing={1}>
       <Grid item xs={12} align="center">
         <Collapse in={errorMsg != "" || successMsg != ""}>
-          {successMsg != "" ? { successMsg } : { errorMsg }}
+          {successMsg != "" ? (
+            <Alert
+              severity="success"
+              onClose={() => {
+                setSuccessMsg("");
+              }}
+            >
+              {successMsg}
+            </Alert>
+          ) : (
+            <Alert
+              severity="error"
+              onClose={() => {
+                setErrorMsg("");
+              }}
+            >
+              {errorMsg}
+            </Alert>
+          )}
         </Collapse>
       </Grid>
       <Grid item xs={12} align="center">
-        <Typography component={"span"} variant="h4">
+        <Typography component="span" variant="h4">
           {title}
         </Typography>
       </Grid>
@@ -128,9 +152,7 @@ const CreateRoomPage = ({
           <RadioGroup
             row
             defaultValue={
-              guestCanPauseCurrent
-                ? guestCanPauseCurrent.toString()
-                : guestCanPause.toString()
+              guestCanPause != null ? guestCanPause.toString() : true
             }
             onChange={handleGuestCanPauseChange}
           >
@@ -155,7 +177,7 @@ const CreateRoomPage = ({
             required={true}
             type="number"
             onChange={handleVotesChange}
-            defaultValue={votesToSkipCurrent ? votesToSkipCurrent : votesToSkip}
+            defaultValue={votesToSkip}
             inputProps={{
               min: 1,
               style: { textAlign: "center" },
