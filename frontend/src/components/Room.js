@@ -49,8 +49,8 @@ const Room = ({ codeOfRoom, clearRoomCode }) => {
         <Grid item xs={12} align="center">
           <CreateRoomPage
             update={true}
-            votesToSkip={votesToSkip}
-            guestCanPause={guestCanPause}
+            votesToSkipCurrent={votesToSkip}
+            guestCanPauseCurrent={guestCanPause}
             roomCode={roomCode}
             updateCallback={getRoomDetails}
           />
