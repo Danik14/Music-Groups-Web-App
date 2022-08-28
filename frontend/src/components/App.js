@@ -31,6 +31,10 @@ export default function App() {
             path="/"
             exact
             element={
+              //here room component is rendered protected
+              //but because of this => url has no code,
+              //it is passed through props instead,
+              //there might be a problem because of this
               <ProtectedRoute roomCode={roomCode}>
                 <Room codeOfRoom={roomCode} clearRoomCode={clearRoomCode} />
               </ProtectedRoute>

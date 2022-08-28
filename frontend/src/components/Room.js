@@ -2,6 +2,7 @@ import React, { useEffect } from "react";
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { Grid, Button, Typography } from "@material-ui/core";
+import CreateRoomPage from "./CreateRoomPage";
 
 const Room = ({ codeOfRoom, clearRoomCode }) => {
   const [votesToSkip, setVotesToSkip] = useState(2);
@@ -11,6 +12,7 @@ const Room = ({ codeOfRoom, clearRoomCode }) => {
   let [roomCode, setRoomCode] = useState(
     codeOfRoom ? codeOfRoom : useParams().roomCode
   );
+  let [showSettings, setShowSettings] = useState(false);
 
   const navigate = useNavigate();
 
@@ -37,6 +39,49 @@ const Room = ({ codeOfRoom, clearRoomCode }) => {
       });
   };
 
+  const updateShowSettings = (value) => {
+    setShowSettings(value);
+  };
+
+  const renderSettings = () => {
+    return (
+      <Grid container spacing={1}>
+        <Grid item xs={12} align="center">
+          <CreateRoomPage
+            update={true}
+            votesToSkip={votesToSkip}
+            guestCanPause={guestCanPause}
+            roomCode={roomCode}
+            updateCallback={getRoomDetails}
+          />
+        </Grid>
+        <Grid item xs={12} align="center">
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={() => updateShowSettings(false)}
+          >
+            Close
+          </Button>
+        </Grid>
+      </Grid>
+    );
+  };
+
+  const renderSettingsButton = () => {
+    return (
+      <Grid item xs={12} align="center">
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={() => updateShowSettings(true)}
+        >
+          Settings
+        </Button>
+      </Grid>
+    );
+  };
+
   const leaveButtonPressed = () => {
     const requestOptions = {
       method: "POST",
@@ -52,7 +97,10 @@ const Room = ({ codeOfRoom, clearRoomCode }) => {
   useEffect(() => {
     getRoomDetails();
   }, []);
-  return (
+
+  return showSettings ? (
+    renderSettings()
+  ) : (
     <Grid container spacing={1}>
       <Grid item xs={12} align="center">
         <Typography variant="h4" component="h4">
@@ -74,6 +122,7 @@ const Room = ({ codeOfRoom, clearRoomCode }) => {
           Host: {isHost.toString()}
         </Typography>
       </Grid>
+      {isHost ? renderSettingsButton() : null}
       <Grid item xs={12} align="center">
         <Button
           variant="contained"
