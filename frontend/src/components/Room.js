@@ -13,6 +13,7 @@ const Room = ({ codeOfRoom, clearRoomCode }) => {
     codeOfRoom ? codeOfRoom : useParams().roomCode
   );
   let [showSettings, setShowSettings] = useState(false);
+  let [spotifyAuthenticated, setSpotifyAuthenticated] = useState(false);
 
   const navigate = useNavigate();
 
@@ -30,12 +31,32 @@ const Room = ({ codeOfRoom, clearRoomCode }) => {
       .then((data) => {
         setVotesToSkip(data.votes_to_skip);
         setGuestCanPause(data.guest_can_pause);
-        setIsHost(data.is_host);
+        setIsHost(data.is_host); //idk y but it doest change state
         console.log("details", data);
+        if (data.is_host) {
+          console.log(1);
+          authenticateSpotify();
+        }
       })
       .catch((error) => {
         navigate("/");
         return;
+      });
+  };
+
+  const authenticateSpotify = () => {
+    fetch("/spotify/is-authenticated")
+      .then((response) => response.json())
+      .then((data) => {
+        setSpotifyAuthenticated(data.status);
+        console.log(data.status);
+        if (!data.status) {
+          fetch("/spotify/get-auth-url")
+            .then((response) => response.json())
+            .then((data) => {
+              window.location.replace(data.url);
+            });
+        }
       });
   };
 

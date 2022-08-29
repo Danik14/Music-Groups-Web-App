@@ -65,7 +65,7 @@ class GetRoom(APIView):
     def get(self, request, format=None):
         #'GET' gives info about url
         # with .get we looking for any parameters
-        # speicifically that matches the name 'code'
+        # speicifically that matches the name 'code' in url string
         code = request.GET.get(self.lookup_url_kwarg)
         if code != None:
             room = Room.objects.filter(code=code)
@@ -73,6 +73,7 @@ class GetRoom(APIView):
                 data = RoomSerializer(room[0]).data
                 # check if user is the host
                 data["is_host"] = self.request.session.session_key == room[0].host
+                print(data)
                 return Response(data, status=status.HTTP_200_OK)
             return Response(
                 {"Room Not Found": "Invalid Room Code."},
