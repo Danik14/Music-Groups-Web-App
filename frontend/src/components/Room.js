@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { Grid, Button, Typography } from "@material-ui/core";
 import CreateRoomPage from "./CreateRoomPage";
+import MusicPlayer from "./MusicPlayer";
 
 const Room = ({ codeOfRoom, clearRoomCode }) => {
   const [votesToSkip, setVotesToSkip] = useState(2);
@@ -14,6 +15,7 @@ const Room = ({ codeOfRoom, clearRoomCode }) => {
   );
   let [showSettings, setShowSettings] = useState(false);
   let [spotifyAuthenticated, setSpotifyAuthenticated] = useState(false);
+  let [song, setSong] = useState({});
 
   const navigate = useNavigate();
 
@@ -57,6 +59,22 @@ const Room = ({ codeOfRoom, clearRoomCode }) => {
               window.location.replace(data.url);
             });
         }
+      })
+      .catch((error) => console.log(error));
+  };
+
+  const getCurrentSong = () => {
+    fetch("/spotify/current-song")
+      .then((response) => {
+        if (!response.ok) {
+          return {};
+        } else {
+          return response.json();
+        }
+      })
+      .then((data) => {
+        setSong(data);
+        console.log("song", data);
       });
   };
 
@@ -117,6 +135,11 @@ const Room = ({ codeOfRoom, clearRoomCode }) => {
 
   useEffect(() => {
     getRoomDetails();
+    let interval = setInterval(getCurrentSong, 1000);
+    return () => {
+      // Anything in here is fired on component unmount.
+      clearInterval(interval);
+    };
   }, []);
 
   return showSettings ? (
@@ -128,21 +151,7 @@ const Room = ({ codeOfRoom, clearRoomCode }) => {
           Code: {roomCode}
         </Typography>
       </Grid>
-      <Grid item xs={12} align="center">
-        <Typography variant="h6" component="h6">
-          Votes: {votesToSkip}
-        </Typography>
-      </Grid>
-      <Grid item xs={12} align="center">
-        <Typography variant="h6" component="h6">
-          Guest Can Pause: {guestCanPause.toString()}
-        </Typography>
-      </Grid>
-      <Grid item xs={12} align="center">
-        <Typography variant="h6" component="h6">
-          Host: {isHost.toString()}
-        </Typography>
-      </Grid>
+      <MusicPlayer {...song} />
       {isHost ? renderSettingsButton() : null}
       <Grid item xs={12} align="center">
         <Button
